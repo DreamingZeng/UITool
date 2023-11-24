@@ -1,0 +1,30 @@
+{
+  "name": "node-binder",
+  "version": "1.1.1",
+  "description": "The package template for getting started.",
+  "author": "DreamCC",
+  "main": "js/main.js",
+  "main-menu": {
+    "UI工具/自动绑定节点": {
+      "message": "node-binder:binderNode",
+      "accelerator": "CmdOrCtrl+b"
+    },
+    "UI工具/自动生成代码": {
+      "message": "node-binder:autoGenCode",
+      "accelerator": "CmdOrCtrl+h"
+    }
+  },
+  "scene-script": "js/tool/scene.js",
+  "panel": {
+    "main": "panel/index.js",
+    "type": "dockable",
+    "title": "node-binder",
+    "width": 400,
+    "height": 300
+  },
+  "dependencies": {
+    "i": "^0.3.6",
+    "tsc": "^2.0.3"
+  },
+  "_storeId": "f366c3651d63f4a7042c148c4b501e1e"
+}
