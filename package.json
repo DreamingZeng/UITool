@@ -1,30 +1,63 @@
 {
-  "name": "node-binder",
-  "version": "1.1.1",
-  "description": "The package template for getting started.",
-  "author": "DreamCC",
-  "main": "js/main.js",
-  "main-menu": {
-    "UI工具/自动绑定节点": {
-      "message": "node-binder:binderNode",
-      "accelerator": "CmdOrCtrl+b"
+    "package_version": 2,
+    "version": "1.0.0",
+    "name": "ui_tool",
+    "description": "i18n:ui_tool.description",
+    "main": "./dist/main.js",
+    "devDependencies": {
+        "@types/node": "^16.0.1",
+        "typescript": "^4.3.4"
     },
-    "UI工具/自动生成代码": {
-      "message": "node-binder:autoGenCode",
-      "accelerator": "CmdOrCtrl+h"
+    "author": "Cocos Creator",
+    "editor": ">=3.7.3",
+    "scripts": {
+        "build": "tsc -b",
+        "watch": "tsc -w"
+    },
+    "contributions": {
+        "scene": {
+            "script": "./dist/scene.js"
+        },
+        "menu": [{
+            "path": "UI工具",
+            "label": "自动绑定节点",
+            "message": "binderNode"
+        },
+        {
+            "path": "UI工具",
+            "label": "自动生成代码",
+            "message": "autoGenCode"
+        },
+        {
+            "path": "UI工具",
+            "label": "自动生成代码并绑定",
+            "message": "autoGenCodeAndBinder"
+        },
+        {
+            "path": "UI工具",
+            "label": "打印UI映射规则",
+            "message": "printMappingRules"
+        }],
+        "messages": {
+            "binderNode": {
+                "methods": ["binderNode"]
+            },
+            "autoGenCode": {
+                "methods": ["autoGenCode"]
+            },
+            "autoGenCodeAndBinder": {
+                "methods": ["autoGenCodeAndBinder"]
+            },
+            "printMappingRules": {
+                "methods": ["printMappingRules"]
+            }
+        },
+        "shortcuts": [
+            {
+                "message": "autoGenCodeAndBinder",
+                "win": "ctrl+b",
+                "mac": "cmd+b"
+            }
+        ]
     }
-  },
-  "scene-script": "js/tool/scene.js",
-  "panel": {
-    "main": "panel/index.js",
-    "type": "dockable",
-    "title": "node-binder",
-    "width": 400,
-    "height": 300
-  },
-  "dependencies": {
-    "i": "^0.3.6",
-    "tsc": "^2.0.3"
-  },
-  "_storeId": "f366c3651d63f4a7042c148c4b501e1e"
 }
