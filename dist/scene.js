@@ -22,11 +22,13 @@ exports.methods = {
     },
     async auto_gen_code_and_binder(uuid) {
         console.log("=========生成UI代码开始=========");
-        await auto_gen_code(uuid);
+        let isSuccess = await auto_gen_code(uuid);
         console.log("=========生成UI代码结束=========");
-        console.log("=========绑定UI节点开始=========");
-        await binder_nodes(uuid);
-        console.log("=========绑定UI节点结束=========");
+        if(isSuccess){
+            console.log("=========绑定UI节点开始=========");
+            await binder_nodes(uuid);
+            console.log("=========绑定UI节点结束=========");
+        }
     },
     print_mapping_rules() {
         console.log("%c映射规则:", "color:green", HeadMenu);
@@ -52,7 +54,7 @@ async function auto_gen_code(uuid) {
     let node = cce.Node.query(uuid);
     if (!node) {
         console.error("没有找到需要的节点");
-        return;
+        return false;
     }
     cacheChildren(node);
     let coms = node.getComponents(cc_1.Component);
@@ -74,10 +76,27 @@ async function auto_gen_code(uuid) {
                 //console.log(res); 
             }
             else {
-                console.log("=====脚本中没有发现替代注释  请在需要添加组件地方复制粘贴以下注释======");
+                console.log("=====脚本中没有发现替代注释  请在需要添加属性的地方粘贴以下注释（已拷贝至剪切板）======");
                 console.log(`/*${PattStart}*/`);
                 console.log(`/*${PattEnd}*/`);
-                return;
+                Editor.Clipboard.write('text', `/*${PattStart}*/\n\t/*${PattEnd}*/`);
+                return false;
+            }
+
+            let reg = txt.match(new RegExp(`${ImportStartTag}([\\s\\S]*?)${ImportEndTag}`,"g")) || [];
+            let allComps = [];
+            let firstComps = [];
+            for (var i = 0; i < reg.length; i++) {
+                let ele = reg[i];
+                let type = ele.replace(ImportStartTag, "");
+                type = type.replace(ImportEndTag, "");
+                type = type.replace(/\s/g, "");
+                // console.log(type);
+                type = type.split(",");
+                allComps.push(...type);
+                if (i === 0) {
+                    firstComps.push(...type);
+                }
             }
             let str = `${PattStart}*/\n`;
             ChildrenMap.forEach((childs, key) => {
@@ -90,6 +109,9 @@ async function auto_gen_code(uuid) {
                     let type = HeadMenu[headName];
                     if (!type) {
                         return;
+                    }
+                    if(allComps.find(v=>v == type) === undefined){
+                        firstComps.push(type);
                     }
                     let old = oldCodeMap.get(child.name);
                     if (old) {
@@ -108,26 +130,33 @@ async function auto_gen_code(uuid) {
                 }
             });
             str += "\n/*" + PattEnd + "";
-            res.toString();
             txt = txt.replace(res.toString(), str);
+            let importStr = ImportStartTag + " " + firstComps.join(", ") + " " + ImportEndTag;
+            if(reg.length){
+                txt = txt.replace(reg[0], importStr);
+            }else{
+                txt = importStr + "\n" + txt;
+            }
             //cc.log(txt); 
             console.log("自动生成代码成功^—^");
             fs.writeFileSync(path, txt);
             let assetUrl = await Editor.Message.request("asset-db", 'query-url', comUuid);
             await Editor.Message.request("asset-db", 'refresh-asset', assetUrl);
             // Editor.Message.send("asset-db", "open-asset", comUuid);
-            return;
+            return true;
         }
     }
     if (!findCustomCom) {
         console.warn("没找到自定义脚本");
+        return false;
     }
+    return false;
 }
 async function binder_nodes(uuid) {
     let node = cce.Node.query(uuid);
     if (!node) {
         console.error("没有找到需要的节点");
-        return;
+        return false;
     }
     cacheChildren(node);
     traveBinder(node);
@@ -136,6 +165,7 @@ async function binder_nodes(uuid) {
     await delay(200);
     Editor.Selection.select("node", uuid);
     // Editor.Selection.update("node", [uuid]);
+    return true;
 }
 class Item {
     constructor() { this.name = ""; this.type = ""; this.content = ""; }
@@ -167,6 +197,9 @@ let replace = '\n\
     ';
 const PattStart = '===========================Auto Gen Start===========================';
 const PattEnd = '===========================Auto Gen End===========================';
+const ImportStartTag = "import {";
+const ImportEndTag = "} from 'cc';";
+
 let ChildrenMap = new Map();
 let oldCodeMap = new Map();
 function parseText(txt) {
@@ -256,7 +289,7 @@ function traveBinder(node) {
                     }
                 }
             }
-            console.log("自动绑定成功^—^");
+            console.log("自动绑定完成^—^");
             return;
         }
     }

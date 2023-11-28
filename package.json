@@ -30,11 +30,6 @@
         },
         {
             "path": "UI工具",
-            "label": "自动生成代码并绑定",
-            "message": "autoGenCodeAndBinder"
-        },
-        {
-            "path": "UI工具",
             "label": "打印UI映射规则",
             "message": "printMappingRules"
         }],
@@ -45,18 +40,20 @@
             "autoGenCode": {
                 "methods": ["autoGenCode"]
             },
-            "autoGenCodeAndBinder": {
-                "methods": ["autoGenCodeAndBinder"]
-            },
             "printMappingRules": {
                 "methods": ["printMappingRules"]
             }
         },
         "shortcuts": [
             {
-                "message": "autoGenCodeAndBinder",
+                "message": "binderNode",
                 "win": "ctrl+b",
                 "mac": "cmd+b"
+            },
+            {
+                "message": "autoGenCode",
+                "win": "ctrl+h",
+                "mac": "cmd+h"
             }
         ]
     }
